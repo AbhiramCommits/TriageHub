@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "./App";
+import MetricsPage from "./pages/MetricsPage";
 import "./index.css";
 
 const queryClient = new QueryClient({
@@ -11,10 +12,12 @@ const queryClient = new QueryClient({
   },
 });
 
+const Page = window.location.pathname === "/metrics" ? MetricsPage : App;
+
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <Page />
     </QueryClientProvider>
   </StrictMode>,
 );

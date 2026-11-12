@@ -12,6 +12,16 @@
   margin-bottom: 1.25rem;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerActions a {
+  text-decoration: none;
+}
+
 .header h1 {
   margin: 0;
   font-size: 1.75rem;

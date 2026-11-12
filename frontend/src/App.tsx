@@ -152,14 +152,19 @@ export default function App() {
           <h1>TriageHub</h1>
           <p className={styles.muted}>Triage static-analysis findings where you already work.</p>
         </div>
-        <button
-          type="button"
-          className={styles.secondaryButton}
-          onClick={() => setHelpOpen(true)}
-          aria-label="Show keyboard shortcuts"
-        >
-          Shortcuts (?) 
-        </button>
+        <div className={styles.headerActions}>
+          <a className={styles.secondaryButton} href="/metrics">
+            Metrics
+          </a>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => setHelpOpen(true)}
+            aria-label="Show keyboard shortcuts"
+          >
+            Shortcuts (?)
+          </button>
+        </div>
       </header>
 
       <FilterBar filters={filters} onChange={updateFilter} onClear={clearFilters} />

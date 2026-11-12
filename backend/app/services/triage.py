@@ -134,4 +134,3 @@ def apply_bulk(
         if outcome.changed:
             updated.append(finding)
     return updated, skipped
-

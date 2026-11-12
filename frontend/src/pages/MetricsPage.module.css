@@ -1,0 +1,74 @@
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #dbe2e9;
+  border-radius: 0.6rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.table th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5c6b7a;
+}
+
+.barTrack {
+  background: #eef2f6;
+  border-radius: 999px;
+  height: 0.5rem;
+  width: 160px;
+  overflow: hidden;
+}
+
+.barFill {
+  background: #0b6bcb;
+  height: 100%;
+}
+
+.verdict {
+  background: #eef6ff;
+  border-left: 4px solid #0b6bcb;
+  padding: 0.75rem 1rem;
+  border-radius: 0.35rem;
+}
+
+.muted {
+  color: #5c6b7a;
+}

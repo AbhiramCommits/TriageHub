@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-11-12T15:38:37.613063+00:00",
+  "metadata": {
+    "findings": 132,
+    "events": 367,
+    "terminal_transitions": 103,
+    "repos": 4,
+    "rules": 15
+  },
+  "metrics": {
+    "time_to_triage": {
+      "overall": {
+        "n": 103,
+        "median_seconds": 20303.95,
+        "p90_seconds": 118519.729
+      },
+      "by_severity": {
+        "critical": {
+          "n": 19,
+          "median_seconds": 6011.693,
+          "p90_seconds": 11926.783
+        },
+        "high": {
+          "n": 42,
+          "median_seconds": 17401.633,
+          "p90_seconds": 53945.84
+        },
+        "medium": {
+          "n": 26,
+          "median_seconds": 39864.329,
+          "p90_seconds": 120456.06
+        },
+        "low": {
+          "n": 16,
+          "median_seconds": 69344.858,
+          "p90_seconds": 131612.644
+        }
+      }
+    },
+    "false_positive_rate_by_rule": [
+      {
+        "rule_id": "python.lang.correctness.useless-comparison",
+        "muted": 7,
+        "accepted": 0,
+        "fp_rate": 1.0
+      },
+      {
+        "rule_id": "javascript.lang.security.audit.prototype-pollution",
+        "muted": 6,
+        "accepted": 0,
+        "fp_rate": 1.0
+      },
+      {
+        "rule_id": "python.flask.security.audit.debug-enabled",
+        "muted": 8,
+        "accepted": 1,
+        "fp_rate": 0.8889
+      },
+      {
+        "rule_id": "python.lang.security.audit.weak-hash",
+        "muted": 8,
+        "accepted": 2,
+        "fp_rate": 0.8
+      },
+      {
+        "rule_id": "javascript.lang.security.audit.innerhtml",
+        "muted": 6,
+        "accepted": 3,
+        "fp_rate": 0.6667
+      },
+      {
+        "rule_id": "python.cryptography.security.insufficient-key-size",
+        "muted": 4,
+        "accepted": 3,
+        "fp_rate": 0.5714
+      },
+      {
+        "rule_id": "python.lang.security.audit.hardcoded-password",
+        "muted": 4,
+        "accepted": 4,
+        "fp_rate": 0.5
+      },
+      {
+        "rule_id": "python.lang.security.audit.subprocess-shell-true",
+        "muted": 1,
+        "accepted": 12,
+        "fp_rate": 0.0769
+      },
+      {
+        "rule_id": "python.lang.security.audit.eval-detected",
+        "muted": 0,
+        "accepted": 6,
+        "fp_rate": 0.0
+      }
+    ],
+    "variant_comparison": {
+      "variant_a": {
+        "variant": "A",
+        "n": 77,
+        "triaged": 64,
+        "triage_rate": 0.8312,
+        "median_seconds": 18002.707
+      },
+      "variant_b": {
+        "variant": "B",
+        "n": 55,
+        "triaged": 39,
+        "triage_rate": 0.7091,
+        "median_seconds": 41500.011
+      },
+      "absolute_delta": 0.1221,
+      "z": -1.6701,
+      "p_value": 0.094907,
+      "significant": false,
+      "verdict": "Not statistically significant at p<0.05; do not pick a winner from this sample."
+    }
+  }
+}

@@ -13,7 +13,7 @@ from app.auth import oauth, oidc
 from app.config import settings
 from app.integrations.github.router import router as github_router
 from app.integrations.slack.router import router as slack_router
-from app.routers import findings, health, users
+from app.routers import findings, health, metrics, users
 
 
 def create_app() -> FastAPI:
@@ -28,6 +28,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(findings.router)
     app.include_router(users.router)
+    app.include_router(metrics.router)
     app.include_router(oauth.router)
     app.include_router(oidc.router)
     app.include_router(slack_router)
