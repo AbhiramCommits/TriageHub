@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
-import type { ReactElement } from "react";
 
 import App from "../App";
 
@@ -21,8 +20,3 @@ export function renderApp(): ReturnType<typeof render> {
   );
 }
 
-export function renderWithClient(element: ReactElement): ReturnType<typeof render> {
-  return render(
-    <QueryClientProvider client={createTestQueryClient()}>{element}</QueryClientProvider>,
-  );
-}

@@ -7,20 +7,11 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models import FindingState, Provider, Role, Severity, Surface, Variant
+from app.models import FindingState, Role, Severity, Variant
 
 
 class ORMModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-
-
-class WorkspaceOut(ORMModel):
-    id: uuid.UUID
-    name: str
-    slug: str
-    sso_only: bool
-    oidc_issuer: str | None
-    created_at: datetime
 
 
 class UserOut(ORMModel):
@@ -56,17 +47,6 @@ class FindingPage(BaseModel):
     next_cursor: str | None = None
 
 
-class EventOut(ORMModel):
-    id: uuid.UUID
-    workspace_id: uuid.UUID
-    finding_id: uuid.UUID | None
-    actor_user_id: uuid.UUID | None
-    kind: str
-    surface: Surface
-    payload: dict[str, object]
-    created_at: datetime
-
-
 class TransitionRequest(BaseModel):
     action: str = Field(description="accept | mute | reopen | assign | resolve")
     assignee_user_id: uuid.UUID | None = None
@@ -81,16 +61,6 @@ class BulkTransitionRequest(BaseModel):
 class BulkTransitionResult(BaseModel):
     updated: list[FindingOut]
     skipped: list[dict[str, str]]
-
-
-class InstallationOut(ORMModel):
-    id: uuid.UUID
-    workspace_id: uuid.UUID
-    provider: Provider
-    external_id: str
-    expires_at: datetime | None
-    scopes: str | None
-    created_at: datetime
 
 
 class SessionUser(BaseModel):

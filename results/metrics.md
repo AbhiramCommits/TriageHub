@@ -1,6 +1,6 @@
 # TriageHub metrics
 
-Generated 2026-11-12T15:38:37.613063+00:00 from 132 findings, 367 events (103 terminal transitions), 15 rules and 4 repositories.
+Generated 2026-11-12T15:41:37.977937+00:00 from 132 findings, 367 events (103 terminal transitions), 15 rules and 4 repositories.
 
 ## Time to triage
 
