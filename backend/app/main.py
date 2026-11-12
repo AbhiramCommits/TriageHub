@@ -11,6 +11,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app.auth import oauth, oidc
 from app.config import settings
+from app.integrations.github.router import router as github_router
+from app.integrations.slack.router import router as slack_router
 from app.routers import findings, health
 
 
@@ -27,6 +29,8 @@ def create_app() -> FastAPI:
     app.include_router(findings.router)
     app.include_router(oauth.router)
     app.include_router(oidc.router)
+    app.include_router(slack_router)
+    app.include_router(github_router)
 
     dist = Path(__file__).resolve().parent.parent / "frontend_dist"
     if dist.is_dir():

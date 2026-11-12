@@ -180,6 +180,35 @@ class HttpGitHubClient:
             "X-GitHub-Api-Version": "2022-11-28",
         }
 
+    def create_installation_token(self, app_jwt: str, installation_id: str) -> dict[str, Any]:
+        response = self._http.post(
+            f"{settings.github_api_base}/app/installations/{installation_id}/access_tokens",
+            headers={
+                "Authorization": f"Bearer {app_jwt}",
+                "Accept": "application/vnd.github+json",
+            },
+        )
+        _raise_for_status(response, "github")
+        return cast(dict[str, Any], response.json())
+
+    def get_file_contents(
+        self, installation_token: str, repo: str, path: str, ref: str
+    ) -> str | None:
+        response = self._http.get(
+            f"{settings.github_api_base}/repos/{repo}/contents/{path}",
+            headers=self._headers(installation_token),
+            params={"ref": ref},
+        )
+        if response.status_code == 404:
+            return None
+        _raise_for_status(response, "github")
+        body = response.json()
+        if isinstance(body, dict) and body.get("encoding") == "base64":
+            import base64
+
+            return base64.b64decode(body.get("content", "")).decode("utf-8", errors="replace")
+        return None
+
     def post_review(
         self,
         installation_token: str,

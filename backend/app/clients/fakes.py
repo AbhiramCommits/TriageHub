@@ -125,6 +125,27 @@ class FakeGitHubClient(RecordingFake):
             external_id="4242",
         )
         self.reviews: list[dict[str, Any]] = []
+        self.files: dict[tuple[str, str], str | None] = {}
+        self.compare_result: dict[str, Any] = {"files": []}
+
+    def create_installation_token(self, app_jwt: str, installation_id: str) -> dict[str, Any]:
+        self._record(
+            "create_installation_token",
+            {"app_jwt": app_jwt, "installation_id": installation_id},
+        )
+        return {
+            "token": "ghs_cached_installation_token",
+            "expires_at": "2099-01-01T00:00:00Z",
+        }
+
+    def get_file_contents(
+        self, installation_token: str, repo: str, path: str, ref: str
+    ) -> str | None:
+        self._record(
+            "get_file_contents",
+            {"installation_token": installation_token, "repo": repo, "path": path, "ref": ref},
+        )
+        return self.files.get((path, ref))
 
     def authorize_url(self, state: str, redirect_uri: str) -> str:
         self._record("authorize_url", {"state": state, "redirect_uri": redirect_uri})
@@ -185,7 +206,7 @@ class FakeGitHubClient(RecordingFake):
                 "head_sha": head_sha,
             },
         )
-        return {"files": []}
+        return self.compare_result
 
 
 class FakeOIDCProvider(RecordingFake):

@@ -56,6 +56,12 @@ class SlackClient(ProviderClient, Protocol):
 
 
 class GitHubClient(ProviderClient, Protocol):
+    def create_installation_token(self, app_jwt: str, installation_id: str) -> dict[str, Any]: ...
+
+    def get_file_contents(
+        self, installation_token: str, repo: str, path: str, ref: str
+    ) -> str | None: ...
+
     def post_review(
         self,
         installation_token: str,

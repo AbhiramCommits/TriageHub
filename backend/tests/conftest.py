@@ -71,6 +71,15 @@ def db(engine: object) -> Iterator[Session]:
         connection.close()
 
 
+@pytest.fixture(autouse=True)
+def _reset_installation_token_cache() -> Iterator[None]:
+    from app.integrations.github.app_auth import installation_token_cache
+
+    installation_token_cache.clear()
+    yield
+    installation_token_cache.clear()
+
+
 @pytest.fixture
 def slack() -> FakeSlackClient:
     return FakeSlackClient()

@@ -8,11 +8,19 @@ from sqlalchemy import or_, select, tuple_
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import Select
 
+from app.auth.oidc import optional_user
 from app.cursor import InvalidCursor, decode_cursor, encode_cursor
 from app.db import get_db
 from app.deps import get_workspace
-from app.models import Finding, FindingState, Severity, Workspace
-from app.schemas import FindingOut, FindingPage
+from app.models import Finding, FindingState, Severity, Surface, User, Workspace
+from app.schemas import (
+    BulkTransitionRequest,
+    BulkTransitionResult,
+    FindingOut,
+    FindingPage,
+    TransitionRequest,
+)
+from app.services.triage import IllegalTransition, apply_bulk, apply_transition
 
 router = APIRouter(prefix="/api/findings", tags=["findings"])
 
@@ -82,4 +90,60 @@ def get_finding(finding_id: uuid.UUID, db: DbDep, workspace: WorkspaceDep) -> Fi
     finding = db.get(Finding, finding_id)
     if finding is None or finding.workspace_id != workspace.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="finding not found")
+    return FindingOut.model_validate(finding)
+
+
+UserDep = Annotated[User | None, Depends(optional_user)]
+
+
+@router.post("/bulk-transition", response_model=BulkTransitionResult)
+def bulk_transition(
+    payload: BulkTransitionRequest,
+    db: DbDep,
+    workspace: WorkspaceDep,
+    actor: UserDep,
+) -> BulkTransitionResult:
+    assignee: User | None = None
+    if payload.assignee_user_id is not None:
+        assignee = db.get(User, payload.assignee_user_id)
+        if assignee is None or assignee.workspace_id != workspace.id:
+            raise HTTPException(status_code=404, detail="assignee not found in workspace")
+    findings = list(
+        db.scalars(
+            select(Finding).where(
+                Finding.workspace_id == workspace.id,
+                Finding.id.in_(payload.finding_ids),
+            )
+        ).all()
+    )
+    updated, skipped = apply_bulk(db, findings, payload.action, actor, Surface.console, assignee)
+    db.commit()
+    return BulkTransitionResult(
+        updated=[FindingOut.model_validate(finding) for finding in updated],
+        skipped=skipped,
+    )
+
+
+@router.post("/{finding_id}/transition", response_model=FindingOut)
+def transition(
+    finding_id: uuid.UUID,
+    payload: TransitionRequest,
+    db: DbDep,
+    workspace: WorkspaceDep,
+    actor: UserDep,
+) -> FindingOut:
+    finding = db.get(Finding, finding_id)
+    if finding is None or finding.workspace_id != workspace.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="finding not found")
+    assignee: User | None = None
+    if payload.assignee_user_id is not None:
+        assignee = db.get(User, payload.assignee_user_id)
+        if assignee is None or assignee.workspace_id != workspace.id:
+            raise HTTPException(status_code=404, detail="assignee not found in workspace")
+    try:
+        apply_transition(finding, payload.action, actor, Surface.console, db=db, assignee=assignee)
+    except IllegalTransition as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=exc.message) from exc
+    db.commit()
+    db.refresh(finding)
     return FindingOut.model_validate(finding)

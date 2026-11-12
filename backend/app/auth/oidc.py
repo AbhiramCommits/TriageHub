@@ -251,3 +251,18 @@ def logout() -> Response:
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
     clear_session_cookie(response)
     return response
+
+
+def optional_user(request: Request, db: Annotated[Session, Depends(get_db)]) -> User | None:
+    """Resolve a session user when present, without requiring authentication."""
+    token = request.cookies.get(settings.session_cookie_name)
+    if not token:
+        return None
+    try:
+        session = read_session(token)
+    except SessionError:
+        return None
+    user = db.get(User, session.user_id)
+    if user is None or user.workspace_id != session.workspace_id:
+        return None
+    return user
