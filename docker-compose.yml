@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-triagehub}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-triagehub}
+      POSTGRES_DB: ${POSTGRES_DB:-triagehub}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-triagehub} -d ${POSTGRES_DB:-triagehub}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      ENV: ${ENV:-development}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-triagehub}:${POSTGRES_PASSWORD:-triagehub}@db:5432/${POSTGRES_DB:-triagehub}
+      SESSION_SECRET: ${SESSION_SECRET:-dev-session-secret-change-me}
+      STATE_SECRET: ${STATE_SECRET:-dev-state-secret-change-me}
+      TOKEN_ENCRYPTION_KEY: ${TOKEN_ENCRYPTION_KEY:-}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8000}
+      CONSOLE_URL: ${CONSOLE_URL:-http://localhost:5173}
+      OIDC_ISSUER: ${OIDC_ISSUER:-https://idp.example.com}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-triagehub}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET:-dev-slack-signing-secret}
+      SLACK_CLIENT_ID: ${SLACK_CLIENT_ID:-}
+      SLACK_CLIENT_SECRET: ${SLACK_CLIENT_SECRET:-}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-dev-github-webhook-secret}
+      GITHUB_APP_ID: ${GITHUB_APP_ID:-0}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  pgdata:
