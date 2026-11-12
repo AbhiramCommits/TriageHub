@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: triagehub
+          POSTGRES_PASSWORD: triagehub
+          POSTGRES_DB: triagehub
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U triagehub -d triagehub"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg://triagehub:triagehub@localhost:5432/triagehub
+      SESSION_SECRET: ci-session-secret
+      STATE_SECRET: ci-state-secret
+      SLACK_SIGNING_SECRET: ci-slack-signing-secret
+      GITHUB_WEBHOOK_SECRET: ci-github-webhook-secret
+      OIDC_ISSUER: https://idp.example.com
+      OIDC_CLIENT_ID: triagehub
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+      - name: Apply migrations
+        run: alembic upgrade head
+      - name: Lint
+        run: ruff check .
+      - name: Format check
+        run: ruff format --check .
+      - name: Typecheck
+        run: mypy app
+      - name: Tests with coverage
+        run: pytest --cov=app --cov-fail-under=80
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Tests
+        run: npm run test -- --run
+      - name: Build
+        run: npm run build

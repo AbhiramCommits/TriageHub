@@ -160,12 +160,14 @@ def make_finding(
     start_line: int = 42,
     snippet: str = 'result = eval(request.args["expr"])',
     state: FindingState = FindingState.open,
+    message: str = "Avoid eval() on untrusted input",
+    first_seen_at: datetime | None = None,
 ) -> Finding:
     finding = Finding(
         workspace_id=workspace.id,
         rule_id=rule_id,
         severity=severity,
-        message="Avoid eval() on untrusted input",
+        message=message,
         repo=repo,
         file_path=file_path,
         start_line=start_line,
@@ -174,7 +176,7 @@ def make_finding(
         code_snippet=snippet,
         rule_rationale="eval executes arbitrary code.",
         state=state,
-        first_seen_at=datetime.now(UTC),
+        first_seen_at=first_seen_at or datetime.now(UTC),
     )
     db.add(finding)
     db.flush()
