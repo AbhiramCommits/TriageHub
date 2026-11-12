@@ -176,6 +176,17 @@ class Finding(Base, TimestampMixin):
     assignee: Mapped[User | None] = relationship(foreign_keys=[assignee_user_id])
 
 
+class ConsumedNonce(Base):
+    """Durable replay protection for short-lived OAuth state tokens."""
+
+    __tablename__ = "consumed_nonces"
+
+    nonce: Mapped[str] = mapped_column(String(100), primary_key=True)
+    consumed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
 class Event(Base):
     __tablename__ = "events"
     __table_args__ = (

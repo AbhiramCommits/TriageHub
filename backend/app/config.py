@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     slack_client_secret: str = "dev-slack-client-secret"
     slack_signing_secret: str = "dev-slack-signing-secret"
     slack_redirect_uri: str = "http://localhost:8000/api/oauth/slack/callback"
+    slack_scopes: str = "commands,chat:write,users:read"
     slack_bot_token: str = ""
     slack_authorize_url: str = "https://slack.com/oauth/v2/authorize"
     slack_token_url: str = "https://slack.com/api/oauth.v2.access"

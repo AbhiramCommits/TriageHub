@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.auth import oauth, oidc
 from app.config import settings
 from app.routers import findings, health
 
@@ -24,6 +25,8 @@ def create_app() -> FastAPI:
     )
     app.include_router(health.router)
     app.include_router(findings.router)
+    app.include_router(oauth.router)
+    app.include_router(oidc.router)
 
     dist = Path(__file__).resolve().parent.parent / "frontend_dist"
     if dist.is_dir():
